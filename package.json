@@ -22,6 +22,8 @@
     "stylelint-vscode": "^7.0.0-6"
   },
   "dependencies": {
+    "lodash": "^4.17.20",
+    "navigo": "^7.1.2",
     "parcel-bundler": "^1.12.4"
   }
 }

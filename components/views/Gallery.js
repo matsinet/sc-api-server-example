@@ -1,2 +1,2 @@
 export default () => `
-<section id="gallery"></section>`
+<section id="gallery"></section>`;

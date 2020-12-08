@@ -1,4 +1,4 @@
-export default () => `
+export default st => `
 <header>
-    <h1>Example SPA</h1>
-</header>`
+    <h1>${st.header}</h1>
+</header>`;
