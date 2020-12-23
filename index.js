@@ -1,5 +1,6 @@
 import { Header, Nav, Main, Footer } from "./components";
 import * as state from "./store";
+import axios from "axios";
 
 function render(st = state.Home) {
   document.querySelector("#root").innerHTML = `
@@ -10,6 +11,7 @@ function render(st = state.Home) {
 `;
   addNavEventListeners();
   addPicOnFormSubmit(st);
+  fetchDataByView(st);
 }
 
 render();
@@ -46,5 +48,20 @@ function addPicOnFormSubmit(st) {
       state.Gallery.pictures.push(newPic);
       render(state.Gallery);
     });
+  }
+}
+
+function fetchDataByView(st = state.Home) {
+  switch (st.view) {
+    case "Pizza":
+      axios
+        .get("http://localhost:4040/pizzas")
+        .then(response => {
+          state[st.view].pizzas = response.data;
+        })
+        .catch(error => {
+          console.log("It puked", error);
+        });
+      break;
   }
 }
