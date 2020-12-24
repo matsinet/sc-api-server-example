@@ -6,14 +6,25 @@ import capitalize from "lodash";
 
 const router = new Navigo(window.location.origin);
 
+router.hooks({
+  before: (done, params) => {
+    // Because not all routes pass params we have to guard against is being undefined
+    const page =
+      params && Object.prototype.hasOwnProperty.call(params, "page")
+        ? capitalize(params.page)
+        : "Home";
+    fetchDataByView(state[page]);
+    done();
+  }
+});
+
 router
   .on({
     "/": () => {
-      fetchDataByView(state.Home);
+      render(state.Home);
     },
     ":page": params => {
-      let page = capitalize(params.page);
-      fetchDataByView(state[page]);
+      render(state[capitalize(params.page)]);
     }
   })
   .resolve();
@@ -68,7 +79,6 @@ function addPicOnFormSubmit(st) {
 }
 
 function fetchDataByView(st = state.Home) {
-  console.log("matsinet-st:", st);
   switch (st.view) {
     case "Pizza":
       axios
@@ -86,6 +96,4 @@ function fetchDataByView(st = state.Home) {
     case "Gallery":
       break;
   }
-
-  render(st);
 }
