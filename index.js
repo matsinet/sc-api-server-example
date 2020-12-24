@@ -1,20 +1,36 @@
 import { Header, Nav, Main, Footer } from "./components";
 import * as state from "./store";
 import axios from "axios";
+import Navigo from "navigo";
+import capitalize from "lodash";
+
+const router = new Navigo(window.location.origin);
+
+router
+  .on({
+    "/": () => {
+      fetchDataByView(state.Home);
+    },
+    ":page": params => {
+      let page = capitalize(params.page);
+      fetchDataByView(state[page]);
+    }
+  })
+  .resolve();
 
 function render(st = state.Home) {
   document.querySelector("#root").innerHTML = `
-  ${Header(st)}
-  ${Nav(state.Links)}
-  ${Main(st)}
-  ${Footer()}
-`;
+    ${Header(st)}
+    ${Nav(state.Links)}
+    ${Main(st)}
+    ${Footer()}
+  `;
+
+  router.updatePageLinks();
+
   addNavEventListeners();
   addPicOnFormSubmit(st);
-  fetchDataByView(st);
 }
-
-render();
 
 function addNavEventListeners() {
   // add event listeners to Nav items for navigation
@@ -52,16 +68,24 @@ function addPicOnFormSubmit(st) {
 }
 
 function fetchDataByView(st = state.Home) {
+  console.log("matsinet-st:", st);
   switch (st.view) {
     case "Pizza":
       axios
         .get("http://localhost:4040/pizzas")
         .then(response => {
           state[st.view].pizzas = response.data;
+          render(st);
         })
         .catch(error => {
           console.log("It puked", error);
         });
       break;
+    case "Bio":
+      break;
+    case "Gallery":
+      break;
   }
+
+  render(st);
 }

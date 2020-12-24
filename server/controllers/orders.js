@@ -23,6 +23,7 @@ router.post("/", (request, response) => {
   newOrder.pizzas = pizzaIds;
   newOrder.customer = customer._id;
   newOrder.notes = body.notes;
+  newOrder.status = body.status;
 
   newOrder.save((error, data) => {
     return error ? response.sendStatus(500).json(error) : response.json(data);
@@ -72,9 +73,60 @@ router.get("/", (request, response) => {
 });
 
 // Update a single orders pizza, delivery and notes subdocuments
-router.put("/:id", (request, response) => {});
+router.put("/:id", (request, response) => {
+  const data = request.body;
+  Order.model.findByIdAndUpdate(
+    request.params.id,
+    {
+      $set: {
+        delivery: data.delivery,
+        notes: data.notes
+      }
+    },
+    (error, data) => {
+      data.pizzas.forEach(pizza => {
+        Pizza.model.findByIdAndUpdate(
+          pizza._id,
+          {
+            $setOnInsert: {
+              crust: pizza.crust,
+              cheese: pizza.cheese,
+              sauce: pizza.sauce,
+              toppings: pizza.toppings,
+              order: pizza.order
+            }
+          },
+          { upsert: true, new: true },
+          error => {
+            return response.sendStatus(500).json(error);
+          }
+        );
+      });
+
+      return error ? response.sendStatus(500).json(error) : res.json(data);
+    }
+  );
+});
 
 // Remove a single order and it's subdocuments
-router.delete("/:id", (request, response) => {});
+router.delete("/:id", (request, response) => {
+  Order.model.findByIdAndDelete(request.params.id, {}, (error, data) => {
+    if (error) response.sendStatus(500).json(error);
+
+    Pizza.model
+      .deleteMany()
+      .where("_id")
+      .in(data.pizzas)
+      .exec(error => {
+        if (error) return response.sendStatus(500).json(error);
+      });
+
+    Customer.model.findByIdAndRemove(data.customer, error => {
+      if (error) return response.sendStatus(500).json(error);
+    });
+
+    return response.json(data);
+  });
+});
 
 module.exports = router;
