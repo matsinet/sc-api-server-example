@@ -1,6 +1,8 @@
 import { Header, Nav, Main, Footer } from "./components";
 import * as state from "./store";
 import axios from "axios";
+
+// Added this vvv
 import Navigo from "navigo";
 import capitalize from "lodash";
 
@@ -28,6 +30,7 @@ router
     }
   })
   .resolve();
+// Added this ^^^
 
 function render(st = state.Home) {
   document.querySelector("#root").innerHTML = `
@@ -41,6 +44,8 @@ function render(st = state.Home) {
 
   addNavEventListeners();
   addPicOnFormSubmit(st);
+  // Remove this vvv
+  // fetchDataByView(st);
 }
 
 function addNavEventListeners() {
