@@ -43,9 +43,7 @@ function render(st = state.Home) {
   router.updatePageLinks();
 
   addNavEventListeners();
-  addPicOnFormSubmit(st);
-  // Remove this vvv
-  // fetchDataByView(st);
+  addEventListenersByView(st);
 }
 
 function addNavEventListeners() {
@@ -63,7 +61,7 @@ function addNavEventListeners() {
       document.querySelector("nav > ul").classList.toggle("hidden--mobile")
     );
 }
-function addPicOnFormSubmit(st) {
+function addEventListenersByView(st) {
   if (st.view === "Form") {
     document.querySelector("form").addEventListener("submit", event => {
       event.preventDefault();
@@ -79,6 +77,36 @@ function addPicOnFormSubmit(st) {
       // add new picture to state.Gallery.pictures
       state.Gallery.pictures.push(newPic);
       render(state.Gallery);
+    });
+  }
+  if (st.view === "Order") {
+    document.querySelector("form").addEventListener("submit", event => {
+      event.preventDefault();
+      const inputList = event.target.elements;
+
+      const toppings = [];
+      for (let input of inputList.toppings) {
+        if (input.checked) {
+          toppings.push(input.value);
+        }
+      }
+
+      const requestData = {
+        crust: inputList.crust.value,
+        cheese: inputList.cheese.value,
+        sauce: inputList.sauce.value,
+        toppings: toppings
+      };
+
+      axios
+        .post("http://localhost:4040/pizzas", requestData)
+        .then(response => {
+          state.Pizza.pizzas.push(response.data);
+          router.navigate("/Pizza");
+        })
+        .catch(error => {
+          console.log("It puked", error);
+        });
     });
   }
 }
