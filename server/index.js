@@ -31,8 +31,10 @@ app.use(bodyParser.json());
 app.use(cors);
 app.use(logging);
 
+const DB_CONNECT = process.env.DB_CONNECT || "mongodb://localhost/pizza";
+
 // Database stuff
-mongoose.connect("mongodb://localhost/pizza");
+mongoose.connect(DB_CONNECT);
 const db = mongoose.connection;
 
 let db_status = "MongoDB connection not successful.";
