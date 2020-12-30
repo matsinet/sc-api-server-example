@@ -1,5 +1,25 @@
 import { Header, Nav, Main, Footer } from "./components";
 import * as state from "./store";
+import axios from "axios";
+
+// Added this vvv
+import Navigo from "navigo";
+import capitalize from "lodash";
+
+const API_URL = process.env.API_URL || "http://localhost:4040";
+
+const router = new Navigo(window.location.origin);
+
+router
+  .on({
+    "/": () => {
+      render(state.Home);
+    },
+    ":page": params => {
+      render(state[capitalize(params.page)]);
+    }
+  })
+  .resolve();
 
 function render(st = state.Home) {
   document.querySelector("#root").innerHTML = `
@@ -8,11 +28,12 @@ function render(st = state.Home) {
   ${Main(st)}
   ${Footer()}
 `;
-  addNavEventListeners();
-  addPicOnFormSubmit(st);
-}
 
-render();
+  router.updatePageLinks();
+
+  addNavEventListeners();
+  addEventListenersByView(st);
+}
 
 function addNavEventListeners() {
   // add event listeners to Nav items for navigation
@@ -29,7 +50,7 @@ function addNavEventListeners() {
       document.querySelector("nav > ul").classList.toggle("hidden--mobile")
     );
 }
-function addPicOnFormSubmit(st) {
+function addEventListenersByView(st) {
   if (st.view === "Form") {
     document.querySelector("form").addEventListener("submit", event => {
       event.preventDefault();
