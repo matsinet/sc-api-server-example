@@ -6,6 +6,8 @@ import axios from "axios";
 import Navigo from "navigo";
 import capitalize from "lodash";
 
+const API_URL = process.env.API_URL || "http://localhost:4040";
+
 const router = new Navigo(window.location.origin);
 
 router.hooks({
@@ -99,7 +101,7 @@ function addEventListenersByView(st) {
       };
 
       axios
-        .post("http://localhost:4040/pizzas", requestData)
+        .post(`${API_URL}/pizzas`, requestData)
         .then(response => {
           state.Pizza.pizzas.push(response.data);
           router.navigate("/Pizza");
@@ -115,7 +117,7 @@ function fetchDataByView(st = state.Home) {
   switch (st.view) {
     case "Pizza":
       axios
-        .get("http://localhost:4040/pizzas")
+        .get(`${API_URL}/pizzas`)
         .then(response => {
           state[st.view].pizzas = response.data;
           render(st);
