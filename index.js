@@ -1,12 +1,9 @@
 import { Header, Nav, Main, Footer } from "./components";
 import * as state from "./store";
-import axios from "axios";
 
 // Added this vvv
 import Navigo from "navigo";
 import capitalize from "lodash";
-
-const API_URL = process.env.API_URL || "http://localhost:4040";
 
 const router = new Navigo(window.location.origin);
 
@@ -31,11 +28,11 @@ function render(st = state.Home) {
 
   router.updatePageLinks();
 
-  addNavEventListeners();
   addEventListenersByView(st);
 }
 
-function addNavEventListeners() {
+function addEventListenersByView(st) {
+  // Add to every view
   // add event listeners to Nav items for navigation
   document.querySelectorAll("nav a").forEach(navLink =>
     navLink.addEventListener("click", event => {
@@ -49,8 +46,8 @@ function addNavEventListeners() {
     .addEventListener("click", () =>
       document.querySelector("nav > ul").classList.toggle("hidden--mobile")
     );
-}
-function addEventListenersByView(st) {
+
+  // Add event listeners for the Form view
   if (st.view === "Form") {
     document.querySelector("form").addEventListener("submit", event => {
       event.preventDefault();
