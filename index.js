@@ -44,11 +44,11 @@ function render(st = state.Home) {
 
   router.updatePageLinks();
 
-  addNavEventListeners();
   addEventListenersByView(st);
 }
 
-function addNavEventListeners() {
+function addEventListenersByView(st) {
+  // Add to every view
   // add event listeners to Nav items for navigation
   document.querySelectorAll("nav a").forEach(navLink =>
     navLink.addEventListener("click", event => {
@@ -62,8 +62,8 @@ function addNavEventListeners() {
     .addEventListener("click", () =>
       document.querySelector("nav > ul").classList.toggle("hidden--mobile")
     );
-}
-function addEventListenersByView(st) {
+
+  // Add event listeners for the Form view
   if (st.view === "Form") {
     document.querySelector("form").addEventListener("submit", event => {
       event.preventDefault();
